@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memoria de Labores 2027 - Prof. Jorge Castañeda</title>
+    <style>
+        :root {
+            --primary: #0f2942;
+            --secondary: #1e4d7b;
+            --accent: #f59e0b;
+            --bg: #f1f5f9;
+            --text: #1e293b;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Barra superior de navegación */
+        header {
+            background: var(--primary);
+            color: var(--white);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        header .brand {
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+
+        header .brand span {
+            color: var(--accent);
+        }
+
+        nav.tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        nav.tabs button {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: var(--white);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.25s;
+        }
+
+        nav.tabs button:hover,
+        nav.tabs button.active {
+            background: var(--accent);
+            color: var(--primary);
+        }
+
+        /* Contenedor de diapositivas */
+        main#slides-container {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 110px);
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            padding: 30px 50px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(30px);
+            transition: all 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        /* Portada */
+        .slide-cover {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--white);
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .cover-badge {
+            background: var(--accent);
+            color: var(--primary);
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .slide-cover h1 {
+            font-size: 3.4rem;
+            margin-bottom: 15px;
+            line-height: 1.15;
+        }
+
+        .slide-cover h2 {
+            font-size: 1.6rem;
+            font-weight: 400;
+            color: #cbd5e1;
+            margin-bottom: 30px;
+        }
+
+        .cover-meta {
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 20px;
+            font-size: 1.05rem;
+            color: #e2e8f0;
+        }
+
+        /* Encabezados de sección */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .section-header p {
+            color: #475569;
+            font-size: 0.95rem;
+            max-width: 650px;
+        }
+
+        .section-num {
+            background: var(--primary);
+            color: var(--accent);
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        /* Cuadrículas de fotos */
+        .gallery {
+            display: grid;
+            gap: 16px;
+            flex: 1;
+            align-content: center;
+        }
+
+        .grid-5 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-10 { grid-template-columns: repeat(5, 1fr); }
+
+        .photo-card {
+            background: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: transform 0.25s, box-shadow 0.25s;
+            border: 2px solid transparent;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border-color: var(--accent);
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            display: block;
+            background: #cbd5e1;
+        }
+
+        .grid-10 .photo-card img {
+            height: 155px;
+        }
+
+        .grid-3 .photo-card img {
+            height: 310px;
+        }
+
+        .photo-caption {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            text-align: center;
+            background: var(--white);
+        }
+
+        /* Controles inferiores */
+        footer {
+            background: var(--white);
+            border-top: 1px solid #cbd5e1;
+            padding: 10px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .controls button {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-left: 8px;
+            transition: background 0.2s;
+        }
+
+        .controls button:hover:not(:disabled) {
+            background: var(--secondary);
+        }
+
+        .controls button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Visor ampliado (Lightbox) */
+        #lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.92);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        #lightbox.open {
+            display: flex;
+        }
+
+        #lightbox img {
+            max-width: 90%;
+            max-height: 80vh;
+            border-radius: 8px;
+            border: 3px solid var(--accent);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        #lightbox p {
+            color: var(--white);
+            margin-top: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        #lightbox span.close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: var(--white);
+            font-size: 2.2rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 900px) {
+            .grid-10 { grid-template-columns: repeat(2, 1fr); }
+            .grid-3 { grid-template-columns: 1fr; }
+            .slide { padding: 20px; }
+            .slide-cover h1 { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">COLEGIO MONTANO <span>| ROBÓTICA & TECNOLOGÍA</span></div>
+        <nav class="tabs" id="nav-tabs">
+            <button class="active" onclick="goToSlide(0)">Portada</button>
+            <button onclick="goToSlide(1)">1. Aprendiendo Robótica</button>
+            <button onclick="goToSlide(2)">2. Competencia Minecraft</button>
+            <button onclick="goToSlide(3)">3. Proyecto Mini Ingenieros</button>
+            <button onclick="goToSlide(4)">4. Reutilizando en Robótica</button>
+        </nav>
+    </header>
+
+    <main id="slides-container">
+        <!-- DIAPOSITIVA 0: PORTADA -->
+        <section class="slide slide-cover active">
+            <div class="cover-badge">Ciclo Escolar 2027</div>
+            <h1>Memoria de Labores 2027</h1>
+            <h2>Profesor Jorge Augusto Castañeda</h2>
+            <div class="cover-meta">
+                Área de Robótica Educativa, Programación y Tecnología • Colegio Montano
+            </div>
+        </section>
+
+        <!-- DIAPOSITIVA 1: APRENDIENDO ROBÓTICA (robotica1 a robotica5) -->
+        <section class="slide">
+            <div class="section-header">
+                <div>
+                    <h2>1. Aprendiendo Robótica</h2>
+                    <p>Ensamblaje, programación por bloques, lógica computacional y experimentación con sensores y actuadores en el aula.</p>
+                </div>
+                <span class="section-num">5 Evidencias</span>
+            </div>
+            <div class="gallery grid-5">
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="robotica1.jpg" alt="Aprendiendo Robótica 1">
+                    <div class="photo-caption">Práctica de Robótica #1</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="robotica2.jpg" alt="Aprendiendo Robótica 2">
+                    <div class="photo-caption">Práctica de Robótica #2</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="robotica3.jpg" alt="Aprendiendo Robótica 3">
+                    <div class="photo-caption">Práctica de Robótica #3</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="robotica4.jpg" alt="Aprendiendo Robótica 4">
+                    <div class="photo-caption">Práctica de Robótica #4</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="robotica5.jpg" alt="Aprendiendo Robótica 5">
+                    <div class="photo-caption">Práctica de Robótica #5</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DIAPOSITIVA 2: COMPETENCIA MINECRAFT (mine1 a mine3) -->
+        <section class="slide">
+            <div class="section-header">
+                <div>
+                    <h2>2. Competencia Minecraft</h2>
+                    <p>Desarrollo de creatividad espacial, diseño arquitectónico digital, trabajo colaborativo y resolución de retos en entornos virtuales.</p>
+                </div>
+                <span class="section-num">3 Evidencias</span>
+            </div>
+            <div class="gallery grid-3">
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="mine1.jpg" alt="Competencia Minecraft 1">
+                    <div class="photo-caption">Competencia Minecraft - Fase 1</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="mine2.jpg" alt="Competencia Minecraft 2">
+                    <div class="photo-caption">Competencia Minecraft - Fase 2</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="mine3.jpg" alt="Competencia Minecraft 3">
+                    <div class="photo-caption">Competencia Minecraft - Fase 3</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DIAPOSITIVA 3: PROYECTO MINI INGENIEROS (mini1 a mini10) -->
+        <section class="slide">
+            <div class="section-header">
+                <div>
+                    <h2>3. Proyecto Mini Ingenieros</h2>
+                    <p>Diseño de prototipos mecánicos y electrónicos, pensamiento de ingeniería y exposición de proyectos estudiantiles.</p>
+                </div>
+                <span class="section-num">10 Evidencias</span>
+            </div>
+            <div class="gallery grid-10">
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="mini1.jpg" alt="Mini Ingenieros 1">
+                    <div class="photo-caption">Mini Ingenieros #1</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="mini2.jpg" alt="Mini Ingenieros 2">
+                    <div class="photo-caption">Mini Ingenieros #2</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="mini3.jpg" alt="Mini Ingenieros 3">
+                    <div class="photo-caption">Mini Ingenieros #3</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="mini4.jpg" alt="Mini Ingenieros 4">
+                    <div class="photo-caption">Mini Ingenieros #4</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="mini5.jpg" alt="Mini Ingenieros 5">
+                    <div class="photo-caption">Mini Ingenieros #5</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="mini6.jpg" alt="Mini Ingenieros 6">
+                    <div class="photo-caption">Mini Ingenieros #6</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="mini7.jpg" alt="Mini Ingenieros 7">
+                    <div class="photo-caption">Mini Ingenieros #7</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="mini8.jpg" alt="Mini Ingenieros 8">
+                    <div class="photo-caption">Mini Ingenieros #8</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="mini9.jpg" alt="Mini Ingenieros 9">
+                    <div class="photo-caption">Mini Ingenieros #9</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="mini10.jpg" alt="Mini Ingenieros 10">
+                    <div class="photo-caption">Mini Ingenieros #10</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DIAPOSITIVA 4: REUTILIZANDO EN ROBÓTICA (ing1 a ing3) -->
+        <section class="slide">
+            <div class="section-header">
+                <div>
+                    <h2>4. Reutilizando en Robótica</h2>
+                    <p>Eco-robótica y sostenibilidad: construcción de mecanismos funcionales aprovechando materiales reciclados y componentes reutilizados.</p>
+                </div>
+                <span class="section-num">3 Evidencias</span>
+            </div>
+            <div class="gallery grid-3">
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="ing1.jpg" alt="Reutilizando en Robótica 1">
+                    <div class="photo-caption">Eco-Robótica y Reutilización #1</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="ing2.jpg" alt="Reutilizando en Robótica 2">
+                    <div class="photo-caption">Eco-Robótica y Reutilización #2</div>
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="ing3.jpg" alt="Reutilizando en Robótica 3">
+                    <div class="photo-caption">Eco-Robótica y Reutilización #3</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div id="slide-counter">Diapositiva 1 de 5</div>
+        <div class="controls">
+            <button id="prev-btn" onclick="changeSlide(-1)" disabled>← Anterior</button>
+            <button id="next-btn" onclick="changeSlide(1)">Siguiente →</button>
+        </div>
+    </footer>
+
+    <!-- Visor ampliado -->
+    <div id="lightbox" onclick="closeLightbox()">
+        <span class="close-btn">×</span>
+        <img id="lightbox-img" src="" alt="">
+        <p id="lightbox-caption"></p>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const tabs = document.querySelectorAll('#nav-tabs button');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const counter = document.getElementById('slide-counter');
+
+        function updateUI() {
+            slides.forEach((s, i) => s.classList.toggle('active', i === currentSlide));
+            tabs.forEach((t, i) => t.classList.toggle('active', i === currentSlide));
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            counter.textContent = `Diapositiva ${currentSlide + 1} de ${slides.length}`;
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateUI();
+        }
+
+        function changeSlide(step) {
+            const next = currentSlide + step;
+            if (next >= 0 && next < slides.length) {
+                currentSlide = next;
+                updateUI();
+            }
+        }
+
+        // Navegación con flechas del teclado
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('lightbox').classList.contains('open')) {
+                if (e.key === 'Escape') closeLightbox();
+                return;
+            }
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+        });
+
+        // Funciones del visor ampliado
+        function openLightbox(card) {
+            const img = card.querySelector('img');
+            const caption = card.querySelector('.photo-caption').textContent;
+            document.getElementById('lightbox-img').src = img.src;
+            document.getElementById('lightbox-caption').textContent = caption;
+            document.getElementById('lightbox').classList.add('open');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('open');
+        }
+    </script>
+</body>
+</html>
